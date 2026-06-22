@@ -44,5 +44,9 @@ runs:
     - name: Add SSH key
       shell: bash
       run: |
-        echo "${{ inputs.ssh_private_key }}" > ~/.ssh/id_rsa
+        printf '%s\n' "${{ inputs.ssh_private_key }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
+        eval "$(ssh-agent -s)"
+        ssh-add ~/.ssh/id_rsa
+        echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
+        echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> $GITHUB_ENV
