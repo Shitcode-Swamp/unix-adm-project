@@ -1,0 +1,28 @@
+services:
+  backend:
+    build: .
+    container_name: unix-adm-backend
+    restart: unless-stopped
+    networks:
+      - backend-internal
+    env_file:
+      - .env
+
+  mongo:
+    image: mongo
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - backend-internal
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_NAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS}
+
+networks:
+  backend-internal:
+
+volumes:
+  mongo-data:
