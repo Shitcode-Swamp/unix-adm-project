@@ -34,7 +34,9 @@ runs:
         Host keeper
           HostName ${{ inputs.host }}
           User server
+          IdentityFile ~/.ssh/id_rsa
           StrictHostKeyChecking no
+          PasswordAuthentication no
           ProxyCommand cloudflared access ssh --hostname %h --id ${{ inputs.cloudflare_id }} --secret ${{ inputs.cloudflare_secret }}
         EOF
         chmod 600 ~/.ssh/config
