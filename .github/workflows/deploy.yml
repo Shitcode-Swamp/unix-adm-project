@@ -1,0 +1,37 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: swamp
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup cloudflared and SSH
+        uses: ./.github/actions/setup-remote-access
+        with:
+          host: ${{ secrets.HOST }}
+          cloudflare_id: ${{ secrets.CLOUDFLARE_ID }}
+          cloudflare_secret: ${{ secrets.CLOUDFLARE_SECRET }}
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy
+        run: |
+          ssh keeper << 'EOF'
+            set -e
+            if [ -d "unix-adm-project" ]; then
+              cd unix-adm-project
+              git pull https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/Shitcode-Swamp/unix-adm-project.git
+            else
+              git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/Shitcode-Swamp/unix-adm-project.git
+              cd unix-adm-project
+            fi
+
+            docker compose up -d --build
+          EOF
+

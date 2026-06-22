@@ -1,0 +1,46 @@
+name: Setup remote access
+description: Install cloudflared and configure SSH access
+
+inputs:
+  host:
+    description: SSH hostname
+    required: true
+  cloudflare_id:
+    description: Cloudflare Access client ID
+    required: true
+  cloudflare_secret:
+    description: Cloudflare Access client secret
+    required: true
+  ssh_private_key:
+    description: SSH private key
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Install cloudflared
+      shell: bash
+      run: |
+        curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o cloudflared
+        chmod +x cloudflared
+        sudo mv cloudflared /usr/local/bin/
+
+    - name: Configure SSH
+      shell: bash
+      run: |
+        mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
+        cat > ~/.ssh/config <<EOF
+        Host keeper
+          HostName ${{ inputs.host }}
+          User server
+          StrictHostKeyChecking no
+          ProxyCommand cloudflared access ssh --hostname %h --id ${{ inputs.cloudflare_id }} --secret ${{ inputs.cloudflare_secret }}
+        EOF
+        chmod 600 ~/.ssh/config
+
+    - name: Add SSH key
+      shell: bash
+      run: |
+        echo "${{ inputs.ssh_private_key }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
