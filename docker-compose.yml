@@ -4,7 +4,8 @@ services:
     container_name: unix-adm-backend
     restart: unless-stopped
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     volumes:
       - ~/:/host
       - /etc/letsencrypt:/etc/letsencrypt:ro
@@ -25,6 +26,20 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_NAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS}
+  
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+
+
+    volumes: 
+      - /home/server/.cloudflared:/home/nonroot/.cloudflared
+    depends_on:
+      - backend
 
 networks:
   backend-internal:
