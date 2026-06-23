@@ -21,9 +21,17 @@ func main() {
 
 	port := os.Getenv("SERVER_PORT")
 	if port == "" {
-		port = "8080"
+		port = "80"
 	}
-	if err := r.Run(":" + port); err != nil {
+
+	certFile := os.Getenv("TLS_CERT")
+	keyFile := os.Getenv("TLS_KEY")
+
+	if certFile != "" && keyFile != "" {
+		err := r.RunTLS(":"+port, certFile, keyFile)
+		log.Fatal(err)
+	} else {
+		err := r.Run(":" + port)
 		log.Fatal(err)
 	}
 }

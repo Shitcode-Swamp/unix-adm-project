@@ -5,6 +5,7 @@ services:
     restart: unless-stopped
     volumes:
       - ~/:/host
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     networks:
       - backend-internal
     env_file:
