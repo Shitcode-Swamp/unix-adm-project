@@ -3,6 +3,8 @@ services:
     build: .
     container_name: unix-adm-backend
     restart: unless-stopped
+    depends_on:
+      - mongo
     volumes:
       - ~/:/host
       - /etc/letsencrypt:/etc/letsencrypt:ro
