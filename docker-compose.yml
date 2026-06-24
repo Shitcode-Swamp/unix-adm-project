@@ -40,10 +40,10 @@ services:
     command: tunnel --no-autoupdate run
     environment:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN}
-
-
-    volumes: 
+    volumes:
       - /home/server/.cloudflared:/home/nonroot/.cloudflared
+    networks:
+      - backend-internal
     depends_on:
       - backend
 
