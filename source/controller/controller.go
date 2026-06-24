@@ -17,9 +17,11 @@ type AppCtx interface {
 }
 
 func Setup(r *gin.Engine, ctx AppCtx) {
-	authctrl.New(ctx.AuthUseCase()).Register(r.Group("/auth"))
+	api := r.Group("/secrets-service")
 
-	protected := r.Group("/")
+	authctrl.New(ctx.AuthUseCase()).Register(api.Group("/auth"))
+
+	protected := api.Group("/")
 	protected.Use(middleware.Auth(ctx.JWTValidator()))
 
 	projectsctrl.New(ctx.ProjectsUseCase()).Register(protected.Group("/projects"))
