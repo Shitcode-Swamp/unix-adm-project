@@ -8,12 +8,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+const Collection = "projects"
+
 type Repo struct {
 	col *mongo.Collection
 }
 
 func New(db *mongo.Database) *Repo {
-	return &Repo{col: db.Collection("projects")}
+	return &Repo{col: db.Collection(Collection)}
 }
 
 func (r *Repo) FindByName(ctx context.Context, name string) (*domain.Project, error) {

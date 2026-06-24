@@ -8,6 +8,8 @@ import (
 	"github.com/Shitcode-Swamp/unix-adm-project/source/controller/middleware"
 	projectsctrl "github.com/Shitcode-Swamp/unix-adm-project/source/controller/projects"
 	secretsctrl "github.com/Shitcode-Swamp/unix-adm-project/source/controller/secrets"
+	"github.com/Shitcode-Swamp/unix-adm-project/source/migrator"
+	"github.com/Shitcode-Swamp/unix-adm-project/source/migrations"
 	"github.com/Shitcode-Swamp/unix-adm-project/source/repo"
 	repoprojects "github.com/Shitcode-Swamp/unix-adm-project/source/repo/projects"
 	repousers "github.com/Shitcode-Swamp/unix-adm-project/source/repo/users"
@@ -30,6 +32,12 @@ func New() (*App, error) {
 	db, err := repo.Connect(Cfg.MongoURI, Cfg.MongoDB)
 	if err != nil {
 		return nil, fmt.Errorf("mongo connect: %w", err)
+	}
+
+	m := migrator.New(db)
+	migrations.Setup(m)
+	if err := m.Run(context.Background()); err != nil {
+		return nil, fmt.Errorf("migrations: %w", err)
 	}
 
 	jwtUtil := jwtutil.New(Cfg.JWTSecret, Cfg.JWTTTLHours)
