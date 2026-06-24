@@ -8,10 +8,12 @@ import (
 
 type UserRepo interface {
 	FindByUsername(ctx context.Context, username string) (*domain.User, error)
+	Create(ctx context.Context, u *domain.User) error
 }
 
 type Hasher interface {
 	Compare(hash, password string) error
+	Hash(password string) (string, error)
 }
 
 type Tokenizer interface {

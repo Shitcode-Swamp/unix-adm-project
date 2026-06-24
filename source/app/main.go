@@ -1,8 +1,8 @@
 package main
 
 import (
+	"context"
 	"log"
-	"os"
 
 	"github.com/gin-gonic/gin"
 
@@ -16,22 +16,18 @@ func main() {
 		log.Fatal(err)
 	}
 
+	if err := app.Seed(context.Background()); err != nil {
+		log.Fatal(err)
+	}
+
 	r := gin.Default()
 	controller.Setup(r, app)
 
-	port := os.Getenv("SERVER_PORT")
-	if port == "" {
-		port = "80"
-	}
+	addr := ":" + appctx.Cfg.ServerPort
 
-	certFile := os.Getenv("TLS_CERT")
-	keyFile := os.Getenv("TLS_KEY")
-
-	if certFile != "" && keyFile != "" {
-		err := r.RunTLS(":"+port, certFile, keyFile)
-		log.Fatal(err)
+	if appctx.Cfg.TLSCert != "" && appctx.Cfg.TLSKey != "" {
+		log.Fatal(r.RunTLS(addr, appctx.Cfg.TLSCert, appctx.Cfg.TLSKey))
 	} else {
-		err := r.Run(":" + port)
-		log.Fatal(err)
+		log.Fatal(r.Run(addr))
 	}
 }
