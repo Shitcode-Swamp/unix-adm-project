@@ -4,14 +4,13 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/Shitcode-Swamp/unix-adm-project/source/domain"
 	ucprojects "github.com/Shitcode-Swamp/unix-adm-project/source/usecase/projects"
 	"github.com/gin-gonic/gin"
 )
 
 type createRequest struct {
-	Name     string                `json:"name" binding:"required"`
-	EnvPaths map[domain.Env]string `json:"env_paths" binding:"required"`
+	Name string `json:"name" binding:"required"`
+	Dir  string `json:"dir"  binding:"required"`
 }
 
 func (c *Controller) create(ctx *gin.Context) {
@@ -20,7 +19,7 @@ func (c *Controller) create(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := c.uc.Create(ctx.Request.Context(), req.Name, req.EnvPaths); err != nil {
+	if err := c.uc.Create(ctx.Request.Context(), req.Name, req.Dir); err != nil {
 		if errors.Is(err, ucprojects.ErrInvalidPath) {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return

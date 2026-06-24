@@ -8,7 +8,7 @@ import (
 )
 
 type UseCase interface {
-	Create(ctx context.Context, name string, envPaths map[domain.Env]string) error
+	Create(ctx context.Context, name, dir string) error
 	Delete(ctx context.Context, name string) error
 	List(ctx context.Context) ([]domain.Project, error)
 }

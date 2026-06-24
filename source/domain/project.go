@@ -10,14 +10,16 @@ import (
 type Project struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
 	Name      string             `bson:"name"`
-	EnvPaths  map[Env]string     `bson:"env_paths"`
+	Dir       string             `bson:"dir"`
 	CreatedAt time.Time          `bson:"created_at"`
 }
 
-func (p *Project) ResolvePath(env Env) (string, bool) {
-	raw, ok := p.EnvPaths[env]
-	if !ok {
-		return "", false
+func (p *Project) ResolvePath(env Env) string {
+	dir := strings.Replace(p.Dir, "~/", "/host/", 1)
+	switch env {
+	case EnvStaging:
+		return dir + "/.staging.env"
+	default:
+		return dir + "/.env"
 	}
-	return strings.Replace(raw, "~/", "/host/", 1), true
 }

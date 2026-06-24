@@ -13,10 +13,7 @@ func (uc *UseCase) ListKeys(ctx context.Context, projectName string, env domain.
 	if err != nil {
 		return nil, fmt.Errorf("project not found: %w", err)
 	}
-	path, ok := project.ResolvePath(env)
-	if !ok {
-		return nil, fmt.Errorf("no path configured for env %s", env)
-	}
+	path := project.ResolvePath(env)
 
 	pairs, err := uc.envFile.Read(path)
 	if err != nil {
