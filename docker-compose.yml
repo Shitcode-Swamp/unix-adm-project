@@ -10,7 +10,8 @@ services:
       - ~/:/host
       - /etc/letsencrypt:/etc/letsencrypt:ro
     networks:
-      - backend-internal
+      - backend-mongo
+      - backend-tunnel
     env_file:
       - .env
 
@@ -22,7 +23,7 @@ services:
     volumes:
       - mongo-data:/data/db
     networks:
-      - backend-internal
+      - backend-mongo
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_NAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS}
@@ -32,7 +33,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-  
+
   tunnel:
     image: cloudflare/cloudflared:latest
     container_name: tunnel
@@ -43,12 +44,13 @@ services:
     volumes:
       - /home/server/.cloudflared:/home/nonroot/.cloudflared
     networks:
-      - backend-internal
+      - backend-tunnel
     depends_on:
       - backend
 
 networks:
-  backend-internal:
+  backend-mongo:
+  backend-tunnel:
 
 volumes:
   mongo-data:
