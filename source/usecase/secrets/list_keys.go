@@ -3,6 +3,7 @@ package secrets
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/Shitcode-Swamp/unix-adm-project/source/domain"
@@ -14,6 +15,7 @@ func (uc *UseCase) ListKeys(ctx context.Context, projectName string, env domain.
 		return nil, fmt.Errorf("project not found: %w", err)
 	}
 	path := project.ResolvePath(env)
+	slog.Info("keys lookup", "dir", project.Dir, "env", env)
 
 	pairs, err := uc.envFile.Read(path)
 	if err != nil {
