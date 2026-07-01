@@ -8,10 +8,10 @@ import (
 )
 
 type Project struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	Name      string             `bson:"name"`
-	Dir       string             `bson:"dir"`
-	CreatedAt time.Time          `bson:"created_at"`
+	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Name      string             `bson:"name"          json:"name"`
+	Dir       string             `bson:"dir"           json:"dir"`
+	CreatedAt time.Time          `bson:"created_at"    json:"created_at"`
 }
 
 func (p *Project) ResolvePath(env Env) string {
