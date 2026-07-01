@@ -2,22 +2,31 @@ package projects
 
 import (
 	"context"
-	"os"
+	"io/fs"
+	"path/filepath"
 	"strings"
 )
 
-func (uc *UseCase) ListGitRepoPaths(ctx context.Context) ([]string, error) {
-	projects, err := uc.projects.List(ctx)
-	if err != nil {
-		return nil, err
-	}
+const hostRoot = "/host"
 
+func (uc *UseCase) ListGitRepoPaths(_ context.Context) ([]string, error) {
 	var paths []string
-	for _, p := range projects {
-		dir := strings.Replace(p.Dir, "~/", "/host/", 1)
-		if _, err := os.Stat(dir + "/.git"); err == nil {
-			paths = append(paths, p.Dir)
+
+	err := filepath.WalkDir(hostRoot, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return filepath.SkipDir
 		}
-	}
-	return paths, nil
+		if !d.IsDir() {
+			return nil
+		}
+		if d.Name() == ".git" {
+			repoDir := filepath.Dir(path)
+			homePath := strings.Replace(repoDir, hostRoot, "~", 1)
+			paths = append(paths, homePath)
+			return filepath.SkipDir
+		}
+		return nil
+	})
+
+	return paths, err
 }
