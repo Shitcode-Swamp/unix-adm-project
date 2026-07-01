@@ -32,7 +32,7 @@ func (uc *UseCase) ListGitRepoPaths(ctx context.Context) ([]string, error) {
 		if d.Name() == ".git" {
 			repoDir := filepath.Dir(path)
 			homePath := strings.Replace(repoDir, hostRoot, "~", 1)
-			if _, ok := registered[homePath]; ok {
+			if _, ok := registered[homePath]; !ok {
 				paths = append(paths, homePath)
 			}
 			return filepath.SkipDir
