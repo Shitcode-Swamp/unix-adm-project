@@ -14,3 +14,12 @@ func (c *Controller) list(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{"projects": projects})
 }
+
+func (c *Controller) listGitRepoPaths(ctx *gin.Context) {
+	paths, err := c.uc.ListGitRepoPaths(ctx.Request.Context())
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"paths": paths})
+}
