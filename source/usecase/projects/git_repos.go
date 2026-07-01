@@ -15,7 +15,7 @@ func (uc *UseCase) ListGitRepoPaths(ctx context.Context) ([]string, error) {
 	var paths []string
 	for _, p := range projects {
 		dir := strings.Replace(p.Dir, "~/", "/host/", 1)
-		if info, err := os.Stat(dir + "/.git"); err == nil && info.IsDir() {
+		if _, err := os.Stat(dir + "/.git"); err == nil {
 			paths = append(paths, p.Dir)
 		}
 	}
