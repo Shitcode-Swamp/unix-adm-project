@@ -19,5 +19,5 @@ func (e *EnvFile) Write(path string, pairs map[string]string) error {
 	for k, v := range pairs {
 		sb.WriteString(fmt.Sprintf("%s=%s\n", k, v))
 	}
-	return os.WriteFile(path, []byte(sb.String()), 0600)
+	return os.WriteFile(path, []byte(sb.String()), 0644)
 }
